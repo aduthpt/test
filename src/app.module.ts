@@ -1,12 +1,14 @@
-// import { logQueues } from './queues';
+
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { User, UserSchema } from "src/User.schema"
 import { BullModule } from '@nestjs/bull';
-import { logQueues } from './queues';
+import { logQueues } from './modules/log/queues';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { Log, LogSchema } from './modules/log/log.schema';
+import { LogModule } from './modules/log/log.module';
+import { User, UserSchema } from './modules/User/User.schema';
 
 
 
@@ -17,23 +19,20 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
       isGlobal: true
   }),
     MongooseModule.forRoot('mongodb://localhost/demo9') , 
-  MongooseModule.forFeature([{name: User.name, schema: UserSchema}]),
+  MongooseModule.forFeature([{name: User.name, schema: UserSchema},{name: Log.name, schema: LogSchema}]),
+
   BullModule.forRoot( {
     redis:{
-      // host: "localhost",
-      // port :3001 ,
-      // password: "password",
+ 
       host: process.env.REDIS_HOST,
       port :parseInt(process.env.REDIS_PORT, 10) ,
       password: process.env.PASSWORD_HOST,
       
     }
   }),
-  BullModule.registerQueue({
-    name: "log",
-  }),
+  LogModule,
 ],
   controllers: [AppController],
-  providers: [AppService,logQueues ],
+  providers: [AppService],
 })
 export class AppModule {}

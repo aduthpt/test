@@ -20,7 +20,5 @@ export class User {
     @Prop({ type :IsString, required: true })
     time :string;
 
-
 }
-
 export const UserSchema = SchemaFactory.createForClass(User);
